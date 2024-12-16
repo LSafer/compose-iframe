@@ -9,6 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.multiplatform.webview.jsbridge.WebViewJsBridge
 import com.multiplatform.webview.web.*
@@ -118,17 +120,21 @@ actual fun WebViewCompat(
         return
     }
 
-    WebView(
-        state = state,
-        modifier = modifier,
-        captureBackPresses = captureBackPresses,
-        navigator = navigator,
-        webViewJsBridge = webViewJsBridge,
-        onCreated = { onCreated() },
-        onDispose = { onDispose() },
-        platformWebViewParams = platformWebViewParams,
-        factory = defaultFactory,
-    )
+    CompositionLocalProvider(
+        LocalDensity provides Density(1f, 1f)
+    ) {
+        WebView(
+            state = state,
+            modifier = modifier,
+            captureBackPresses = captureBackPresses,
+            navigator = navigator,
+            webViewJsBridge = webViewJsBridge,
+            onCreated = { onCreated() },
+            onDispose = { onDispose() },
+            platformWebViewParams = platformWebViewParams,
+            factory = defaultFactory,
+        )
+    }
 }
 
 private val defaultFactory = { param: WebViewFactoryParam ->
