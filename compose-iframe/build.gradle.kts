@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
+    `maven-publish`
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.compose)
@@ -77,5 +78,22 @@ android {
     }
     dependencies {
         debugImplementation(compose.uiTooling)
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            create<MavenPublication>("release") {
+                // Applies the component for the release build variant.
+                from(components["kotlin"])
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = "net.lsafer"
+                artifactId = "compose-iframe"
+                version = project.version.toString()
+            }
+        }
     }
 }
