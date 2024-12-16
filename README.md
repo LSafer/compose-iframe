@@ -1,4 +1,4 @@
-# Iframe component for compose-multiplatform (desktop + android)
+# Iframe component for compose-multiplatform (desktop + android) [![](https://jitpack.io/v/net.lsafer/compose-iframe.svg)](https://jitpack.io/#net.lsafer/compose-iframe)
 
 This is a wrapper for [KevinnZou](https://github.com/KevinnZou/compose-webview-multiplatform)'s
 library with primary focus of providing an `iframe` like experience.
