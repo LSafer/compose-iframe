@@ -14,6 +14,8 @@ import com.multiplatform.webview.jsbridge.WebViewJsBridge
 import com.multiplatform.webview.web.*
 import dev.datlag.kcef.KCEF
 import dev.datlag.kcef.KCEFBrowser
+import dev.datlag.kcef.KCEFBuilder
+import dev.datlag.kcef.KCEFBuilder.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -33,9 +35,12 @@ private val LocalJcefStartupState = compositionLocalOf<JcefStartupState> {
 
 @Composable
 fun JcefStartupScope(
-    bundleDir: File,
-    cacheDir: File,
-    onRestartRequired: () -> Unit,
+    bundle: File,
+    download: KCEFBuilder.Download.Builder.() -> Unit = {
+        github { release("jbr-release-17.0.10b1087.23") }
+    },
+    settings: Settings.() -> Unit = {},
+    onRestartRequired: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     // see https://github.com/DatL4g/KCEF/blob/master/COMPOSE.md
@@ -46,19 +51,8 @@ fun JcefStartupScope(
         withContext(Dispatchers.IO) {
             KCEF.init(
                 builder = {
-                    installDir(bundleDir)
+                    installDir(bundle)
 
-                    /*
-                      Add this code when using JDK 17.
-                      Builder().github {
-                          release("jbr-release-17.0.10b1087.23")
-                      }.buffer(download.bufferSize).build()
-                     */
-                    download {
-                        github {
-                            release("jbr-release-17.0.10b1087.23")
-                        }
-                    }
                     progress {
                         onDownloading {
                             // this handles the issue were the download
@@ -72,9 +66,8 @@ fun JcefStartupScope(
                             startup.isInitialized = true
                         }
                     }
-                    settings {
-                        cachePath = cacheDir.absolutePath
-                    }
+                    download(download)
+                    settings(settings)
                 },
                 onError = { if (it != null) startup.errorsList += it },
                 onRestartRequired = { onRestartRequired() },

@@ -72,3 +72,26 @@ fun Component() {
     IframeCompat(state, Modifier.fillMaxSize())
 }
 ```
+
+### Setup (for desktop)
+
+```kotlin
+@Composable
+fun App() { // <-- top most component
+    JcefStartupScope(
+        bundle = File("./kcef-bundle"), // <-- were to store the downloaded cef bundle
+        download = {
+            // configure from where and what version to download
+        },
+        settings = {
+            // cef configuration
+            cachePath = "./cache" // <-- necessary to persist cookies and localStorage
+        },
+        onRestartRequired = {
+            // rare to occur. prompt the user to restart the application when it happens
+        },
+    ) {
+        // The application content. (we use the global instance, yet it is better to only use webview here)
+    }
+}
+```
