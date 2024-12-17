@@ -14,20 +14,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlin.coroutines.resume
 
-data class IframeEvent(val data: JsonElement)
-
-class IframeState(
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+actual class IframeState(
     val webview: WebViewState,
     val navigator: WebViewNavigator,
     val jsBridge: WebViewJsBridge,
-    internal val incomingCh: Channel<IframeEvent>,
-    internal val outgoingCh: Channel<IframeEvent>,
+    internal val _incoming: Channel<IframeIncomingEvent>,
+    internal val _outgoing: Channel<IframeOutgoingEvent>,
 ) {
-    val incoming: ReceiveChannel<IframeEvent> = incomingCh
-    val outgoing: SendChannel<IframeEvent> = outgoingCh
+    actual val incoming: ReceiveChannel<IframeIncomingEvent> = _incoming
+    actual val outgoing: SendChannel<IframeOutgoingEvent> = _outgoing
+}
+
+@Composable
+actual fun rememberIframeState(url: String): IframeState {
+    return rememberIframeState(url, mapOf())
 }
 
 @Composable
@@ -38,8 +41,8 @@ fun rememberIframeState(
     val webview = rememberWebViewState(url, additionalHttpHeaders)
     val navigator = rememberWebViewNavigator()
     val jsBridge = remember { WebViewJsBridge() }
-    val incoming = remember { Channel<IframeEvent>() }
-    val outgoing = remember { Channel<IframeEvent>() }
+    val incoming = remember { Channel<IframeIncomingEvent>() }
+    val outgoing = remember { Channel<IframeOutgoingEvent>() }
 
     return remember(
         webview,
@@ -52,14 +55,26 @@ fun rememberIframeState(
             webview = webview,
             navigator = navigator,
             jsBridge = jsBridge,
-            incomingCh = incoming,
-            outgoingCh = outgoing,
+            _incoming = incoming,
+            _outgoing = outgoing,
         )
     }
 }
 
 @Composable
-fun IframeCompat(
+actual fun Iframe(state: IframeState, modifier: Modifier) {
+    Iframe(
+        state = state,
+        modifier = modifier,
+        captureBackPresses = true,
+        onCreated = {},
+        onDispose = {},
+        platformWebViewParams = null,
+    )
+}
+
+@Composable
+fun Iframe(
     state: IframeState,
     modifier: Modifier = Modifier,
     captureBackPresses: Boolean = true,
@@ -85,9 +100,10 @@ fun IframeCompat(
                 navigator: WebViewNavigator?,
                 callback: (String) -> Unit
             ) {
-                val data = Json.parseToJsonElement(message.params)
+                val iframeEvent: IframeIncomingEvent =
+                    Json.decodeFromString(message.params)
                 scope.launch(Dispatchers.IO) {
-                    state.incomingCh.send(IframeEvent(data))
+                    state._incoming.send(iframeEvent)
                 }
                 callback("")
             }
@@ -110,7 +126,8 @@ fun IframeCompat(
         val script = """
             if (!window.kmpInteropEstablished) {
                 window.parent.addEventListener("message", event => {
-                    window.kmpJsBridge.callNative("onMessageReceived", JSON.stringify(event.data))
+                    const iframeEvent = { data: event.data, origin: event.origin }
+                    window.kmpJsBridge.callNative("onMessageReceived", JSON.stringify(iframeEvent))
                 })
                 window.kmpInteropEstablished = true
             }
@@ -125,10 +142,12 @@ fun IframeCompat(
             return@LaunchedEffect
 
         launch {
-            for (message in state.outgoingCh) {
+            for (iframeEvent in state._outgoing) {
+                val dataString = Json.encodeToString(iframeEvent.data)
+                val targetOrigin = iframeEvent.targetOrigin
+
                 // language=javascript
-                val data = Json.encodeToString(message.data)
-                val script = "window.postMessage($data, '*')"
+                val script = "window.postMessage($dataString, $targetOrigin)"
 
                 suspendCancellableCoroutine { cont ->
                     state.navigator.evaluateJavaScript(script) {

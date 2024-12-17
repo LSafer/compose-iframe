@@ -31,7 +31,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 jcef = { module = "dev.datlag:jcef", version = "2024.04.20.3" }
 kcef = { module = "dev.datlag:kcef", version = "2024.04.20.3" }
 
-kevinnzou-composeWebviewMultiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.9.40" }
+kevinnzou-compose-webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.9.40" }
 
 ##### KTOR Dependencies #####
 

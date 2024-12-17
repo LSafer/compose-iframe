@@ -12,6 +12,11 @@ plugins {
 kotlin {
     jvm("desktop")
 
+    js {
+        browser()
+        useEsModules()
+    }
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -20,6 +25,7 @@ kotlin {
     }
 
     sourceSets {
+        val kevinnzouMain by creating
         val desktopMain by getting
 
         commonMain.dependencies {
@@ -31,10 +37,14 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.ui)
             implementation(compose.material3)
-
-            implementation(libs.kevinnzou.composeWebviewMultiplatform)
         }
 
+        kevinnzouMain.dependsOn(commonMain.get())
+        kevinnzouMain.dependencies {
+            implementation(libs.kevinnzou.compose.webview)
+        }
+
+        desktopMain.dependsOn(kevinnzouMain)
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
 
@@ -42,6 +52,7 @@ kotlin {
             implementation(libs.kcef)
         }
 
+        androidMain { dependsOn(kevinnzouMain) }
         androidMain.dependencies {
             implementation(compose.preview)
         }
