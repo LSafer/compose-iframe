@@ -88,12 +88,16 @@ actual fun Iframe(state: IframeState, modifier: Modifier) {
 
     Box(modifier.onGloballyPositioned { coordinates ->
         val bounds = coordinates.boundsInWindow()
+        val ratio = window.devicePixelRatio
 
-        state.iframe.style.width = coordinates.size.width.toString()
-        state.iframe.style.height = coordinates.size.height.toString()
-        state.iframe.style.top = bounds.top.toString()
-        state.iframe.style.bottom = bounds.bottom.toString()
-        state.iframe.style.left = bounds.left.toString()
-        state.iframe.style.right = bounds.right.toString()
+        state.iframe.style.width = "${coordinates.size.width / ratio}px"
+        state.iframe.style.height = "${coordinates.size.height / ratio}px"
+        state.iframe.style.top = "${bounds.top / ratio}px"
+        state.iframe.style.left = "${bounds.left / ratio}px"
+        state.iframe.style.right = "${bounds.right / ratio}px"
+        state.iframe.style.bottom = "${bounds.bottom / ratio}px"
+        state.iframe.style.position = "absolute"
+        state.iframe.style.background = "white"
+        state.iframe.style.border = "none"
     })
 }
