@@ -4,13 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
+@Serializable
 data class IframeIncomingEvent(
     val data: JsonElement,
     val origin: String,
 )
 
+@Serializable
 data class IframeOutgoingEvent(
     val data: JsonElement,
     val targetOrigin: String = "*",
