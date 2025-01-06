@@ -64,7 +64,7 @@ actual fun Iframe(state: IframeState, modifier: Modifier) {
     DisposableEffect(state.iframe) {
         val callback: (Event) -> Unit = it@{ event ->
             event as MessageEvent
-            if (event.source != state.iframe.contentWindow) return@it
+            if (event.source !== state.iframe.contentWindow) return@it
             val iframeEvent = IframeIncomingEvent(
                 data = Json.parseToJsonElement(JSON.stringify(event.data)),
                 origin = event.origin,
