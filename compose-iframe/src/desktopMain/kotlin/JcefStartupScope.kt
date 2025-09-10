@@ -25,7 +25,7 @@ class JcefStartupState {
 fun JcefStartupScope(
     bundle: File,
     download: KCEFBuilder.Download.Builder.() -> Unit = {
-        github { release("jbr-release-17.0.10b1087.23") }
+        github { release("jbr-release-21.0.8b1038.71") }
     },
     settings: Settings.() -> Unit = {},
     onRestartRequired: () -> Unit = {},
