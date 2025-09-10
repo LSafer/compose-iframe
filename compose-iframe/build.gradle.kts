@@ -11,31 +11,30 @@ plugins {
     alias(libs.plugins.compose)
 }
 
+group = "net.lsafer.compose-iframe"
+version = "local_snapshot"
+
 kotlin {
-    jvm("desktop")
-    js { browser() }
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs { browser() }
+    applyDefaultHierarchyTemplate()
+
     androidTarget {
+        publishLibraryVariants("release")
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+    jvmToolchain(22)
+    jvm("desktop")
+    js { browser() }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs { browser() }
     sourceSets {
         val commonMain by getting
-
-        val kevinnzouMain by creating
-        val desktopMain by getting
-        val androidMain by getting
 
         val webMain by creating
         val jsMain by getting
         val wasmJsMain by getting
-
-        kevinnzouMain.dependsOn(commonMain)
-        desktopMain.dependsOn(kevinnzouMain)
-        androidMain.dependsOn(kevinnzouMain)
 
         webMain.dependsOn(commonMain)
         jsMain.dependsOn(webMain)
@@ -53,9 +52,10 @@ kotlin {
     }
     sourceSets.androidMain.dependencies {
         implementation(compose.preview)
-    }
-    sourceSets.named("kevinnzouMain").dependencies {
-        implementation(libs.kevinnzou.compose.webview)
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.webkit)
+        implementation(libs.filekit.core)
+        implementation(libs.filekit.dialogs)
     }
     sourceSets.named("desktopMain").dependencies {
         implementation(compose.desktop.currentOs)
