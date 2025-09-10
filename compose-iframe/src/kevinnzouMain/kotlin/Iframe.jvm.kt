@@ -6,13 +6,14 @@ import com.multiplatform.webview.jsbridge.IJsMessageHandler
 import com.multiplatform.webview.jsbridge.JsMessage
 import com.multiplatform.webview.jsbridge.WebViewJsBridge
 import com.multiplatform.webview.web.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.serialization.encodeToString
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.serialization.json.Json
 import kotlin.coroutines.resume
 
@@ -21,42 +22,55 @@ actual class IframeState(
     val webview: WebViewState,
     val navigator: WebViewNavigator,
     val jsBridge: WebViewJsBridge,
-    internal val _incoming: Channel<IframeIncomingEvent>,
-    internal val _outgoing: Channel<IframeOutgoingEvent>,
+    internal val coroutineScope: CoroutineScope,
 ) {
+    internal val _incoming = Channel<IframeIncomingEvent>()
+    internal val _outgoing = Channel<IframeOutgoingEvent>()
+
+    actual var src: String
+        get() = webview.lastLoadedUrl.orEmpty()
+        set(value) {
+            if (!webview.isLoading) {
+                navigator.loadUrl(value)
+            } else {
+                snapshotFlow { webview.isLoading }
+                    .filter { !it }
+                    .take(1)
+                    .onEach { navigator.loadUrl(value) }
+                    .launchIn(coroutineScope)
+            }
+        }
+
     actual val incoming: ReceiveChannel<IframeIncomingEvent> = _incoming
     actual val outgoing: SendChannel<IframeOutgoingEvent> = _outgoing
 }
 
-@Composable
-actual fun rememberIframeState(url: String): IframeState {
-    return rememberIframeState(url, mapOf())
+actual fun IframeState(coroutineScope: CoroutineScope): IframeState {
+    return IframeState(
+        webview = WebViewState(
+            WebContent.NavigatorOnly,
+        ),
+        navigator = WebViewNavigator(coroutineScope + Dispatchers.IO),
+        jsBridge = WebViewJsBridge(),
+        coroutineScope = coroutineScope,
+    )
 }
 
 @Composable
+@Deprecated("Use IframeState constructor instead.")
 fun rememberIframeState(
     url: String,
     additionalHttpHeaders: Map<String, String> = emptyMap(),
 ): IframeState {
     val webview = rememberWebViewState(url, additionalHttpHeaders)
-    val navigator = rememberWebViewNavigator()
-    val jsBridge = remember { WebViewJsBridge() }
-    val incoming = remember { Channel<IframeIncomingEvent>() }
-    val outgoing = remember { Channel<IframeOutgoingEvent>() }
+    val coroutineScope = rememberCoroutineScope()
 
-    return remember(
-        webview,
-        navigator,
-        jsBridge,
-        incoming,
-        outgoing,
-    ) {
+    return remember(webview, coroutineScope) {
         IframeState(
             webview = webview,
-            navigator = navigator,
-            jsBridge = jsBridge,
-            _incoming = incoming,
-            _outgoing = outgoing,
+            navigator = WebViewNavigator(coroutineScope),
+            jsBridge = WebViewJsBridge(),
+            coroutineScope = coroutineScope,
         )
     }
 }
