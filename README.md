@@ -41,7 +41,7 @@ data class ExampleEventData(
 @Composable
 fun Component() {
     val coroutineScope = rememberCoroutineScope()
-    val iframe = remember { IframeState(url, coroutineScope) }
+    val iframe = remember { IframeState(coroutineScope) }
 
     LaunchedEffect(Unit) {
         iframe.src = "https://lsafer-meemer.github.io/iframe-copy-cat/iframe.html"
