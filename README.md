@@ -40,12 +40,16 @@ data class ExampleEventData(
 
 @Composable
 fun Component() {
-    val url = "https://lsafer-meemer.github.io/iframe-copy-cat/iframe.html"
-    val state = rememberIframeState(url)
+    val coroutineScope = rememberCoroutineScope()
+    val iframe = remember { IframeState(url, coroutineScope) }
+
+    LaunchedEffect(Unit) {
+        iframe.src = "https://lsafer-meemer.github.io/iframe-copy-cat/iframe.html"
+    }
 
     LaunchedEffect(Unit) {
         launch {
-            for (event in state.incoming) {
+            for (event in iframe.incoming) {
                 val data: ExampleEventData = try {
                     Json.decodeFromJsonElement(event.data)
                 } catch (e: Throwable) {
@@ -66,16 +70,16 @@ fun Component() {
                     value = "Hello World: $it"
                 )
 
-                val event = IframeEvent(
+                val event = IframeOutgoingEvent(
                     Json.encodeToJsonElement(data),
                 )
 
-                state.outgoing.send(event)
+                iframe.outgoing.send(event)
             }
         }
     }
 
-    IframeCompat(state, Modifier.fillMaxSize())
+    Iframe(iframe, Modifier.fillMaxSize())
 }
 ```
 
