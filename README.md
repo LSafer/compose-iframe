@@ -1,13 +1,18 @@
 # Iframe component for compose-multiplatform (desktop + android + JS + WASM) [![](https://jitpack.io/v/net.lsafer/compose-iframe.svg)](https://jitpack.io/#net.lsafer/compose-iframe)
 
-This is a wrapper for [KevinnZou](https://github.com/KevinnZou/compose-webview-multiplatform)'s
-library with primary focus of providing an `iframe` like experience.
+On desktop, this implementation uses `kcef` in background
+and render it in a swing component. [How to setup for desktop](./SETUP_DESKTOP.md)
 
-On javascript, this implementation creates an actual `iframe`
+On android, this implementation uses `androidx.webkit` for
+rendering and `FileKit` for file picker integration. [How to setup for Android](./SETUP_ANDROID.md)
+
+On browser, this implementation creates an actual `iframe`
 element using `document.createElement("iframe")` and position it
 at the correct place using `Modifier.onGloballyPositioned { ... }`.
 However, this approach does not support thigs rendered above the
 iframe.
+
+> Inspiration and code stolen from (not dependency): https://github.com/KevinnZou/compose-webview-multiplatform
 
 ### Install
 
@@ -80,28 +85,5 @@ fun Component() {
     }
 
     Iframe(iframe, Modifier.fillMaxSize())
-}
-```
-
-### Setup (for desktop)
-
-```kotlin
-@Composable
-fun App() { // <-- top most component
-    JcefStartupScope(
-        bundle = File("./kcef-bundle"), // <-- were to store the downloaded cef bundle
-        download = {
-            // configure from where and what version to download
-        },
-        settings = {
-            // cef configuration
-            cachePath = "./cache" // <-- necessary to persist cookies and localStorage
-        },
-        onRestartRequired = {
-            // rare to occur. prompt the user to restart the application when it happens
-        },
-    ) {
-        // The application content. (we use the global instance, yet it is better to only use webview here)
-    }
 }
 ```
