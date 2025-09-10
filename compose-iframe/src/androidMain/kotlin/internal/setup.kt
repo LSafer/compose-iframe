@@ -7,11 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.json.Json
 import net.lsafer.compose.iframe.IframeIncomingEvent
 import net.lsafer.compose.iframe.IframeOutgoingEvent
-import kotlin.coroutines.resume
 
 /* ============= ------------------ ============= */
 
@@ -65,11 +63,7 @@ fun WebView.installOutgoingChannel(
             // language=javascript
             val script = "window.postMessage($dataString, $targetOrigin)"
 
-            suspendCancellableCoroutine { cont ->
-                evaluateJavascript(script) {
-                    cont.resume(Unit)
-                }
-            }
+            evaluateJavascript(script, null)
         }
     }
 }
