@@ -28,9 +28,9 @@ suspend inline fun <reified T> IframeState.consumeEach(block: (T, String) -> Uni
         val data = try {
             Json.decodeFromJsonElement<T>(event.data)
         } catch (_: SerializationException) {
-            return
+            continue
         } catch (_: IllegalArgumentException) {
-            return
+            continue
         }
 
         block(data, event.origin)
