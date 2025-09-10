@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
+import net.lsafer.compose.iframe.internal.installElement
 import net.lsafer.compose.iframe.internal.installIncomingChannel
 import net.lsafer.compose.iframe.internal.installOutgoingChannel
 import org.w3c.dom.HTMLIFrameElement
@@ -46,6 +47,7 @@ actual class IframeState(
         iframe.addEventListener("load") {
             _isLoading = false
         }
+        iframe.installElement(coroutineScope)
         iframe.installOutgoingChannel(coroutineScope, _outgoing)
         iframe.installIncomingChannel(coroutineScope, _incoming)
     }

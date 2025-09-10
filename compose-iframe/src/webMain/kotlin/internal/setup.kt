@@ -1,5 +1,6 @@
 package net.lsafer.compose.iframe.internal
 
+import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -15,6 +16,17 @@ import org.w3c.dom.events.Event
 import kotlin.js.ExperimentalWasmJsInterop
 import kotlin.js.JsAny
 import kotlin.js.js
+
+/* ============= ------------------ ============= */
+
+@OptIn(ExperimentalWasmJsInterop::class)
+internal fun HTMLIFrameElement.installElement(coroutineScope: CoroutineScope) {
+    style.setProperty("display", "none")
+    document.body!!.appendChild(this)
+    coroutineScope.coroutineContext.job.invokeOnCompletion {
+        document.body!!.removeChild(this)
+    }
+}
 
 /* ============= ------------------ ============= */
 

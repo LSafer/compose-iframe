@@ -6,7 +6,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
-import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlin.js.ExperimentalWasmJsInterop
 
@@ -15,8 +14,8 @@ import kotlin.js.ExperimentalWasmJsInterop
 actual fun Iframe(state: IframeState, modifier: Modifier) {
     // attach / detach iframe
     DisposableEffect(state.iframe) {
-        document.body!!.appendChild(state.iframe)
-        onDispose { document.body!!.removeChild(state.iframe) }
+        state.iframe.style.setProperty("display", "block")
+        onDispose { state.iframe.style.removeProperty("display") }
     }
 
     Box(modifier.onGloballyPositioned { coordinates ->
