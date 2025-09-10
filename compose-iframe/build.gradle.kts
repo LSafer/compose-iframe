@@ -23,37 +23,48 @@ kotlin {
         }
     }
     sourceSets {
+        val commonMain by getting
+
         val kevinnzouMain by creating
         val desktopMain by getting
+        val androidMain by getting
 
-        commonMain.dependencies {
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.datetime)
+        val webMain by creating
+        val jsMain by getting
+        val wasmJsMain by getting
 
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.ui)
-            implementation(compose.material3)
-        }
-
-        kevinnzouMain.dependsOn(commonMain.get())
-        kevinnzouMain.dependencies {
-            implementation(libs.kevinnzou.compose.webview)
-        }
-
+        kevinnzouMain.dependsOn(commonMain)
         desktopMain.dependsOn(kevinnzouMain)
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
+        androidMain.dependsOn(kevinnzouMain)
 
-            implementation(libs.jcef)
-            implementation(libs.kcef)
-        }
+        webMain.dependsOn(commonMain)
+        jsMain.dependsOn(webMain)
+        wasmJsMain.dependsOn(webMain)
+    }
+    sourceSets.commonMain.dependencies {
+        implementation(libs.kotlinx.serialization.json)
+        implementation(libs.kotlinx.coroutines.core)
+        implementation(libs.kotlinx.datetime)
 
-        androidMain { dependsOn(kevinnzouMain) }
-        androidMain.dependencies {
-            implementation(compose.preview)
-        }
+        implementation(compose.runtime)
+        implementation(compose.foundation)
+        implementation(compose.ui)
+        implementation(compose.material3)
+    }
+    sourceSets.androidMain.dependencies {
+        implementation(compose.preview)
+    }
+    sourceSets.named("kevinnzouMain").dependencies {
+        implementation(libs.kevinnzou.compose.webview)
+    }
+    sourceSets.named("desktopMain").dependencies {
+        implementation(compose.desktop.currentOs)
+
+        implementation(libs.jcef)
+        implementation(libs.kcef)
+    }
+    sourceSets.named("webMain").dependencies {
+        implementation(libs.kotlinx.browser)
     }
 }
 
@@ -87,22 +98,5 @@ android {
     }
     dependencies {
         debugImplementation(compose.uiTooling)
-    }
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            create<MavenPublication>("release") {
-                // Applies the component for the release build variant.
-                from(components["kotlin"])
-
-                // You can then customize attributes of the publication as shown below.
-                groupId = "net.lsafer"
-                artifactId = "compose-iframe"
-                version = project.version.toString()
-            }
-        }
     }
 }

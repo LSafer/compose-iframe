@@ -3,6 +3,7 @@ kotlin = "2.2.0"
 kotlinx-serialization = "1.9.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
+kotlinx-browser = "0.5.0"
 
 compose = "1.8.2"
 
@@ -26,6 +27,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 
 jcef = { module = "dev.datlag:jcef", version = "2024.04.20.4" }
 kcef = { module = "dev.datlag:kcef", version = "2024.04.20.4" }
