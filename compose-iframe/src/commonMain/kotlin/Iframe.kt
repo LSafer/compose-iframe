@@ -38,6 +38,11 @@ expect class IframeState {
     var src: String
 
     /**
+     * If the iframe is loading or not. (causes recomposition on change)
+     */
+    val isLoading: Boolean
+
+    /**
      * Incoming messages to the parent window of the `iframe`.
      *
      * > Note: this is a channel of ALL the messages guaranteeing only

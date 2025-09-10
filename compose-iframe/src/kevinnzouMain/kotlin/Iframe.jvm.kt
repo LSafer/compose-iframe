@@ -24,6 +24,8 @@ actual class IframeState(
     val jsBridge: WebViewJsBridge,
     internal val coroutineScope: CoroutineScope,
 ) {
+    actual val isLoading get() = webview.isLoading
+
     internal val _incoming = Channel<IframeIncomingEvent>()
     internal val _outgoing = Channel<IframeOutgoingEvent>()
 

@@ -1,10 +1,7 @@
 package net.lsafer.compose.iframe
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -28,12 +25,23 @@ actual class IframeState(
     val iframe: HTMLIFrameElement,
     internal val coroutineScope: CoroutineScope,
 ) {
+    internal var _isLoading by mutableStateOf(false)
+
+    actual val isLoading get() = _isLoading
+
+    init {
+        iframe.addEventListener("load") {
+            _isLoading = false
+        }
+    }
+
     internal val _incoming = Channel<IframeIncomingEvent>()
     internal val _outgoing = Channel<IframeOutgoingEvent>()
 
     actual var src: String
         get() = iframe.src
         set(value) {
+            _isLoading = true
             iframe.src = value
         }
 
