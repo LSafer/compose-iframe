@@ -24,7 +24,6 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    jvmToolchain(22)
     jvm("desktop")
     js { browser() }
     @OptIn(ExperimentalWasmDsl::class)
