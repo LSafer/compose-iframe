@@ -15,7 +15,7 @@ actual fun Iframe(state: IframeState, modifier: Modifier) {
     // attach / detach iframe
     DisposableEffect(state.iframe) {
         state.iframe.style.setProperty("display", "block")
-        onDispose { state.iframe.style.removeProperty("display") }
+        onDispose { state.iframe.style.setProperty("display", "none") }
     }
 
     Box(modifier.onGloballyPositioned { coordinates ->
