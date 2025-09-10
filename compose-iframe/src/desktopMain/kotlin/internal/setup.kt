@@ -77,7 +77,7 @@ internal fun KCEFBrowser.installOutgoingChannel(
     coroutineScope.launch {
         for (iframeEvent in channel) {
             val dataString = Json.encodeToString(iframeEvent.data)
-            val targetOrigin = iframeEvent.targetOrigin
+            val targetOrigin = Json.encodeToString(iframeEvent.targetOrigin)
 
             // language=javascript
             val script = "window.postMessage($dataString, $targetOrigin)"
