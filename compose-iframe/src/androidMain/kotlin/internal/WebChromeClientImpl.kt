@@ -34,10 +34,14 @@ internal class WebChromeClientImpl(
         filePathCallback: ValueCallback<Array<Uri>>,
         fileChooserParams: FileChooserParams
     ): Boolean {
+        val extensions = fileChooserParams.acceptTypes?.map {
+            it.substringAfterLast('/').removePrefix(".")
+        }.orEmpty()
+
         when (fileChooserParams.mode) {
             FileChooserParams.MODE_OPEN -> coroutineScope.launch {
                 val file = FileKit.openFilePicker(
-                    type = FileKitType.File(fileChooserParams.acceptTypes.asList()),
+                    type = FileKitType.File(extensions),
                     mode = FileKitMode.Single,
                     title = fileChooserParams.title?.toString(),
                 )
@@ -52,7 +56,7 @@ internal class WebChromeClientImpl(
 
             FileChooserParams.MODE_OPEN_MULTIPLE -> coroutineScope.launch {
                 val files = FileKit.openFilePicker(
-                    type = FileKitType.File(fileChooserParams.acceptTypes.asList()),
+                    type = FileKitType.File(extensions),
                     mode = FileKitMode.Multiple(),
                     title = fileChooserParams.title?.toString(),
                 )
