@@ -33,6 +33,14 @@ compose.desktop {
 
 ### In Code
 
+Initialize `filekit` on app start (optional):
+
+```kotlin
+fun main() {
+    FileKit.init(appId = "<your app id here>")
+}
+```
+
 You need to wrap the iframe component with this:
 
 ```kotlin
@@ -58,5 +66,3 @@ fun App() { // <-- top most component
     }
 }
 ```
-
-

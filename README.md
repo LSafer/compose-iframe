@@ -1,7 +1,7 @@
 # Iframe component for compose-multiplatform (desktop + android + JS + WASM) [![](https://jitpack.io/v/net.lsafer/compose-iframe.svg)](https://jitpack.io/#net.lsafer/compose-iframe)
 
-On desktop, this implementation uses `kcef` in background
-and render it in a swing component. [How to setup for desktop](./SETUP_DESKTOP.md)
+On desktop, this implementation uses `kcef` in for rendering
+and `FileKit` for file picker integration. [How to setup for desktop](./SETUP_DESKTOP.md)
 
 On android, this implementation uses `androidx.webkit` for
 rendering and `FileKit` for file picker integration. [How to setup for Android](./SETUP_ANDROID.md)
