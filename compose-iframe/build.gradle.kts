@@ -61,6 +61,9 @@ kotlin {
 
         implementation(libs.jcef)
         implementation(libs.kcef)
+
+        implementation(libs.filekit.core)
+        implementation(libs.filekit.dialogs)
     }
     sourceSets.named("webMain").dependencies {
         implementation(libs.kotlinx.browser)

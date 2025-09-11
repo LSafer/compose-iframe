@@ -77,6 +77,7 @@ actual class IframeState(
                     browser.executeInteropInstallScript()
             },
         ))
+        newClient.addDialogHandler(DialogHandlerImpl(coroutineScope))
         coroutineScope.coroutineContext.job.invokeOnCompletion {
             newClient.dispose()
         }
