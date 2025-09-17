@@ -11,6 +11,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ actual fun Iframe(state: IframeState, modifier: Modifier) {
     CompositionLocalProvider(LocalDensity provides Density(1f, 1f)) {
         state.getOrCreateBrowser().let { browser ->
             SwingPanel(
+                background = Color.Transparent,
                 factory = { browser.uiComponent },
                 modifier = modifier,
             )
