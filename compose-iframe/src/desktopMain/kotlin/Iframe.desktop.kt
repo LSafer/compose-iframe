@@ -14,8 +14,6 @@ import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import java.awt.Dimension
-import java.util.concurrent.TimeUnit
 
 @Composable
 actual fun Iframe(state: IframeState, modifier: Modifier) {
@@ -40,14 +38,10 @@ actual fun Iframe(state: IframeState, modifier: Modifier) {
 
     CompositionLocalProvider(LocalDensity provides Density(1f, 1f)) {
         state.getOrCreateBrowser().let { browser ->
-            if (runCatching { browser.windowlessFrameRate.get(100L, TimeUnit.MILLISECONDS) }.getOrNull() == null) {
-                SwingPanel(
-                    factory = { browser.uiComponent },
-                    modifier = modifier,
-                )
-            } else {
-                browser.uiComponent.size = Dimension(1280, 720)
-            }
+            SwingPanel(
+                factory = { browser.uiComponent },
+                modifier = modifier,
+            )
         }
     }
 }
