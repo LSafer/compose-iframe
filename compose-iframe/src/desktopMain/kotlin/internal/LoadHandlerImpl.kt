@@ -15,11 +15,9 @@ internal class LoadHandlerImpl(
         canGoBack: Boolean,
         canGoForward: Boolean,
     ) {
-        if (isLoading) {
-            onLoadingStart()
-        } else {
-            onLoadingEnd()
-        }
+        // DO NOT USE THIS FOR isLoading detection!!!
+        // it will be invoked even if the document only changed
+        // its hash or navigation state which is not loading.
     }
 
     override fun onLoadStart(
